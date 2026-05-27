@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>상담 관리자 | 법무사이장화사무소</title>
+<title>상담 관리자 | 법무사이장헌사무소</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <style>
 :root {
@@ -307,12 +307,8 @@ body {
   <div class="login-card">
     <div class="login-logo">⚖️</div>
     <h1 class="login-title">상담 관리 시스템</h1>
-    <p class="login-sub">법무사이장화사무소</p>
+    <p class="login-sub">법무사이장헌사무소</p>
     <form id="loginForm" autocomplete="on">
-      <div class="field">
-        <label for="urlIn">Google Apps Script URL</label>
-        <input id="urlIn" type="url" placeholder="https://script.google.com/macros/s/..." autocomplete="url" required />
-      </div>
       <div class="field">
         <label for="pwIn">관리자 비밀번호</label>
         <input id="pwIn" type="password" placeholder="비밀번호 입력" autocomplete="current-password" required />
@@ -369,9 +365,12 @@ body {
 <div id="toast" class="toast"></div>
 
 <script>
+// ===== 설정 =====
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweg0_j0rHD_7gd3zPTbdaLL6-SWpGRNar3cegUzutFadDavjX0z4zI-ZU0sZa3y28_/exec";
+
 // ===== 상태 =====
 const S = {
-  url:      localStorage.getItem("_aUrl") || "",
+  url:      SCRIPT_URL,
   pw:       sessionStorage.getItem("_aPw") || "",
   all:      [],   // 전체 데이터
   view:     [],   // 필터링된 데이터
@@ -406,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===== 로그인 =====
 async function doLogin(e) {
   e.preventDefault();
-  const url = document.getElementById("urlIn").value.trim();
   const pw  = document.getElementById("pwIn").value;
   const errEl = document.getElementById("loginErr");
   const btn   = document.getElementById("loginBtn");
@@ -416,11 +414,10 @@ async function doLogin(e) {
   errEl.style.display = "none";
 
   try {
-    S.url = url; S.pw = pw;
+    S.url = SCRIPT_URL; S.pw = pw;
     const r = await api({ action: "list" });
     if (r.error === "unauthorized") throw new Error("비밀번호가 올바르지 않습니다.");
 
-    localStorage.setItem("_aUrl", url);
     sessionStorage.setItem("_aPw", pw);
     S.all = r.data || [];
     S.lastSync = new Date();
@@ -435,7 +432,7 @@ async function doLogin(e) {
     }
     errEl.textContent = msg;
     errEl.style.display = "block";
-    S.url = ""; S.pw = "";
+    S.url = SCRIPT_URL; S.pw = "";
   } finally {
     btn.disabled = false;
     btn.textContent = "접속하기 →";
@@ -449,7 +446,7 @@ function showApp() {
 
 function doLogout() {
   sessionStorage.removeItem("_aPw");
-  S.url = ""; S.pw = ""; S.all = []; S.view = [];
+  S.url = SCRIPT_URL; S.pw = ""; S.all = []; S.view = [];
   document.getElementById("loginScreen").style.display = "flex";
   document.getElementById("app").style.display = "none";
   document.getElementById("pwIn").value = "";
